@@ -1,0 +1,98 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "AzDataFactoryDev"
+		},
+		"LS_AZ_BLOB_Delimited_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_AZ_BLOB_Delimited'"
+		},
+		"LS_AZ_Blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_AZ_Blob'"
+		},
+		"LS_AZ_table_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_AZ_table'"
+		},
+		"LS_Metadata_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_Metadata'"
+		},
+		"LS_Source_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_Source'"
+		},
+		"LS_Target_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_Target'"
+		},
+		"LS_Test_Azure_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_Test_Azure'"
+		},
+		"LS_Source_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "@{linkedService().User_Name}"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LS_AZ_BLOB_Delimited_connectionString": {
+						"value": "[parameters('LS_AZ_BLOB_Delimited_connectionString')]"
+					},
+					"LS_AZ_Blob_connectionString": {
+						"value": "[parameters('LS_AZ_Blob_connectionString')]"
+					},
+					"LS_AZ_table_connectionString": {
+						"value": "[parameters('LS_AZ_table_connectionString')]"
+					},
+					"LS_Metadata_connectionString": {
+						"value": "[parameters('LS_Metadata_connectionString')]"
+					},
+					"LS_Target_connectionString": {
+						"value": "[parameters('LS_Target_connectionString')]"
+					},
+					"LS_Test_Azure_connectionString": {
+						"value": "[parameters('LS_Test_Azure_connectionString')]"
+					},
+					"LS_Source_connectionString": {
+						"value": "[parameters('LS_Source_connectionString')]"
+					},
+					"LS_Source_properties_typeProperties_userName": {
+						"value": "[parameters('LS_Source_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
