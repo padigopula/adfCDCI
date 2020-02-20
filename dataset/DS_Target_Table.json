@@ -1,0 +1,82 @@
+{
+	"name": "DS_Target_Table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Target",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DatabaseName": {
+					"value": "@dataset().DatabaseName",
+					"type": "Expression"
+				},
+				"TargetServerName": {
+					"value": "@dataset().Target_ServerName",
+					"type": "Expression"
+				},
+				"TargetUserName": {
+					"value": "@dataset().Target_UserName",
+					"type": "Expression"
+				},
+				"TargetPassword": {
+					"value": "@dataset().Target_Password",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"Target_Table": {
+				"type": "string"
+			},
+			"Target_Schema": {
+				"type": "string"
+			},
+			"DatabaseName": {
+				"type": "String"
+			},
+			"Target_ServerName": {
+				"type": "string"
+			},
+			"Target_UserName": {
+				"type": "string"
+			},
+			"Target_Password": {
+				"type": "string"
+			},
+			"Target_Query": {
+				"type": "string"
+			},
+			"Target_Param_1": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "City",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ZipCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LoadDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().Target_Schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().Target_Table",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

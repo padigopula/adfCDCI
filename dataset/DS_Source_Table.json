@@ -1,0 +1,55 @@
+{
+	"name": "DS_Source_Table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Source",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"Server_Name": "@dataset().Server_Name",
+				"Source_Database_Name": "@dataset().Database_Name",
+				"User_Name": "@dataset().User_Name",
+				"Password": "@dataset().Password"
+			}
+		},
+		"parameters": {
+			"Table_Schema": {
+				"type": "string"
+			},
+			"Table_Name": {
+				"type": "string"
+			},
+			"Database_Name": {
+				"type": "string"
+			},
+			"Server_Name": {
+				"type": "string"
+			},
+			"User_Name": {
+				"type": "string"
+			},
+			"Password": {
+				"type": "string"
+			},
+			"Query": {
+				"type": "string"
+			},
+			"ID": {
+				"type": "string"
+			},
+			"Query_v1": {
+				"type": "string"
+			},
+			"Param_1": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DEPT"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

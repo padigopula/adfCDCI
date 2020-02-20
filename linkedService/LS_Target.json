@@ -1,0 +1,25 @@
+{
+	"name": "LS_Target",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Data Source=@{linkedService().TargetServerName};Initial Catalog=@{linkedService().DatabaseName};User ID=@{linkedService().TargetUserName};Password=@{linkedService().TargetPassword}"
+		},
+		"parameters": {
+			"DatabaseName": {
+				"type": "String"
+			},
+			"TargetServerName": {
+				"type": "String"
+			},
+			"TargetUserName": {
+				"type": "String"
+			},
+			"TargetPassword": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}

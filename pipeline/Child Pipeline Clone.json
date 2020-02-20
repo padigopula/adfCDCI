@@ -1,0 +1,95 @@
+{
+	"name": "Child Pipeline Clone",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.PassingSchema",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlServerSource",
+									"sqlReaderQuery": {
+										"value": "@{item().Src_Query}",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00"
+								},
+								"sink": {
+									"type": "SqlServerSink"
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Source_Table",
+									"type": "DatasetReference",
+									"parameters": {
+										"Table_Schema": "@{item().Src_Schema}",
+										"Table_Name": "@{item().Src_Table}",
+										"Database_Name": "@{item().Src_Database}",
+										"Server_Name": "@{item().Src_Server}",
+										"User_Name": "@{item().Src_User}",
+										"Password": "@{item().Src_Pwd}",
+										"Query": "@{item().Src_Query}",
+										"ID": "@{item().ID}",
+										"Query_v1": "@{item().Src_Query_v1}",
+										"Param_1": "@{item().Src_Param_1}"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_Target_Table",
+									"type": "DatasetReference",
+									"parameters": {
+										"Target_Table": "@{item().Trg_Table}",
+										"Target_Schema": "@{item().Trg_Schema}",
+										"DatabaseName": "@{item().Trg_Database}",
+										"Target_ServerName": "@{item().Trg_Server}",
+										"Target_UserName": "@{item().Trg_User}",
+										"Target_Password": "@{item().Trg_Pwd}",
+										"Target_Query": "@{item().Trg_Pwd}",
+										"Target_Param_1": "@{item().Trg_Pwd}"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"PassingSchema": {
+				"type": "array"
+			}
+		},
+		"variables": {
+			"id": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,31 @@
+{
+	"name": "LS_Source",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"Server_Name": {
+				"type": "String"
+			},
+			"Source_Database_Name": {
+				"type": "String"
+			},
+			"User_Name": {
+				"type": "String"
+			},
+			"Password": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "Integrated Security=True;Data Source=@{linkedService().Server_Name};Initial Catalog=@{linkedService().Source_Database_Name}",
+			"userName": "@{linkedService().User_Name}",
+			"password": "@{linkedService().Password}"
+		},
+		"connectVia": {
+			"referenceName": "SHIROnPrem",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

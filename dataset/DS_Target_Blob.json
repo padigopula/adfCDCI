@@ -1,0 +1,45 @@
+{
+	"name": "DS_Target_Blob",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AZ_BLOB_Delimited",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"File_Name": {
+				"type": "string"
+			},
+			"Directory_Name": {
+				"type": "string"
+			},
+			"Container_Name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@concat(dataset().File_Name, '_', formatDateTime(utcnow(),'yyyy-MM-dd HH:mm:ss'),'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().Directory_Name",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().Container_Name",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
