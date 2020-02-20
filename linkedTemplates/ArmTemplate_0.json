@@ -1,0 +1,739 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "AzDataFactoryDev"
+        },
+        "LS_AZ_BLOB_Delimited_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_AZ_BLOB_Delimited'"
+        },
+        "LS_AZ_Blob_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_AZ_Blob'"
+        },
+        "LS_AZ_table_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_AZ_table'"
+        },
+        "LS_Metadata_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_Metadata'"
+        },
+        "LS_Target_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_Target'"
+        },
+        "LS_Test_Azure_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_Test_Azure'"
+        },
+        "LS_Source_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_Source'"
+        },
+        "LS_Source_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "@{linkedService().User_Name}"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_AZ_BLOB_Delimited')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "connectionString": "[parameters('LS_AZ_BLOB_Delimited_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_AZ_Blob')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "connectionString": "[parameters('LS_AZ_Blob_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_AZ_table')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureTableStorage",
+                "typeProperties": {
+                    "connectionString": "[parameters('LS_AZ_table_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_Metadata')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "SqlServer",
+                "typeProperties": {
+                    "connectionString": "[parameters('LS_Metadata_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_Target')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "DatabaseName": {
+                        "type": "String"
+                    },
+                    "TargetServerName": {
+                        "type": "String"
+                    },
+                    "TargetUserName": {
+                        "type": "String"
+                    },
+                    "TargetPassword": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [],
+                "type": "SqlServer",
+                "typeProperties": {
+                    "connectionString": "[parameters('LS_Target_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_Test_Azure')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('LS_Test_Azure_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SHIROnPrem')]",
+            "type": "Microsoft.DataFactory/factories/integrationRuntimes",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "SelfHosted",
+                "typeProperties": {}
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_Metadata')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_Metadata",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "SqlServerTable",
+                "schema": [],
+                "typeProperties": {}
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LS_Metadata')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_Target_Blob')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_AZ_BLOB_Delimited",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "File_Name": {
+                        "type": "string"
+                    },
+                    "Directory_Name": {
+                        "type": "string"
+                    },
+                    "Container_Name": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": {
+                            "value": "@concat(dataset().File_Name, '_', formatDateTime(utcnow(),'yyyy-MM-dd HH:mm:ss'),'.csv')",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory_Name",
+                            "type": "Expression"
+                        },
+                        "container": {
+                            "value": "@dataset().Container_Name",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LS_AZ_BLOB_Delimited')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_Target_Table')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_Target",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "DatabaseName": {
+                            "value": "@dataset().DatabaseName",
+                            "type": "Expression"
+                        },
+                        "TargetServerName": {
+                            "value": "@dataset().Target_ServerName",
+                            "type": "Expression"
+                        },
+                        "TargetUserName": {
+                            "value": "@dataset().Target_UserName",
+                            "type": "Expression"
+                        },
+                        "TargetPassword": {
+                            "value": "@dataset().Target_Password",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "parameters": {
+                    "Target_Table": {
+                        "type": "string"
+                    },
+                    "Target_Schema": {
+                        "type": "string"
+                    },
+                    "DatabaseName": {
+                        "type": "String"
+                    },
+                    "Target_ServerName": {
+                        "type": "string"
+                    },
+                    "Target_UserName": {
+                        "type": "string"
+                    },
+                    "Target_Password": {
+                        "type": "string"
+                    },
+                    "Target_Query": {
+                        "type": "string"
+                    },
+                    "Target_Param_1": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "SqlServerTable",
+                "schema": [
+                    {
+                        "name": "City",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ZipCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LoadDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().Target_Schema",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().Target_Table",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LS_Target')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_Test_Az_DB')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_Test_Azure",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "DEPTNO",
+                        "type": "decimal",
+                        "precision": 2,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DNAME",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "LOC",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CreatedDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "ModifiedDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "DEPT"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LS_Test_Azure')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_Source')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "Server_Name": {
+                        "type": "String"
+                    },
+                    "Source_Database_Name": {
+                        "type": "String"
+                    },
+                    "User_Name": {
+                        "type": "String"
+                    },
+                    "Password": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [],
+                "type": "SqlServer",
+                "typeProperties": {
+                    "connectionString": "[parameters('LS_Source_connectionString')]",
+                    "userName": "[parameters('LS_Source_properties_typeProperties_userName')]",
+                    "password": "@{linkedService().Password}"
+                },
+                "connectVia": {
+                    "referenceName": "SHIROnPrem",
+                    "type": "IntegrationRuntimeReference"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/integrationRuntimes/SHIROnPrem')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_Source_Table')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_Source",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "Server_Name": "@dataset().Server_Name",
+                        "Source_Database_Name": "@dataset().Database_Name",
+                        "User_Name": "@dataset().User_Name",
+                        "Password": "@dataset().Password"
+                    }
+                },
+                "parameters": {
+                    "Table_Schema": {
+                        "type": "string"
+                    },
+                    "Table_Name": {
+                        "type": "string"
+                    },
+                    "Database_Name": {
+                        "type": "string"
+                    },
+                    "Server_Name": {
+                        "type": "string"
+                    },
+                    "User_Name": {
+                        "type": "string"
+                    },
+                    "Password": {
+                        "type": "string"
+                    },
+                    "Query": {
+                        "type": "string"
+                    },
+                    "ID": {
+                        "type": "string"
+                    },
+                    "Query_v1": {
+                        "type": "string"
+                    },
+                    "Param_1": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "SqlServerTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "DEPT"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LS_Source')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Child Pipeline Clone')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ForEach1",
+                        "type": "ForEach",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@pipeline().parameters.PassingSchema",
+                                "type": "Expression"
+                            },
+                            "isSequential": true,
+                            "activities": [
+                                {
+                                    "name": "Copy data1",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "SqlServerSource",
+                                            "sqlReaderQuery": {
+                                                "value": "@{item().Src_Query}",
+                                                "type": "Expression"
+                                            },
+                                            "queryTimeout": "02:00:00"
+                                        },
+                                        "sink": {
+                                            "type": "SqlServerSink"
+                                        },
+                                        "enableStaging": false
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "DS_Source_Table",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "Table_Schema": "@{item().Src_Schema}",
+                                                "Table_Name": "@{item().Src_Table}",
+                                                "Database_Name": "@{item().Src_Database}",
+                                                "Server_Name": "@{item().Src_Server}",
+                                                "User_Name": "@{item().Src_User}",
+                                                "Password": "@{item().Src_Pwd}",
+                                                "Query": "@{item().Src_Query}",
+                                                "ID": "@{item().ID}",
+                                                "Query_v1": "@{item().Src_Query_v1}",
+                                                "Param_1": "@{item().Src_Param_1}"
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "DS_Target_Table",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "Target_Table": "@{item().Trg_Table}",
+                                                "Target_Schema": "@{item().Trg_Schema}",
+                                                "DatabaseName": "@{item().Trg_Database}",
+                                                "Target_ServerName": "@{item().Trg_Server}",
+                                                "Target_UserName": "@{item().Trg_User}",
+                                                "Target_Password": "@{item().Trg_Pwd}",
+                                                "Target_Query": "@{item().Trg_Pwd}",
+                                                "Target_Param_1": "@{item().Trg_Pwd}"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "parameters": {
+                    "PassingSchema": {
+                        "type": "array"
+                    }
+                },
+                "variables": {
+                    "id": {
+                        "type": "String"
+                    }
+                },
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/DS_Source_Table')]",
+                "[concat(variables('factoryId'), '/datasets/DS_Target_Table')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Child Pipeline')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ForEach1",
+                        "type": "ForEach",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@pipeline().parameters.PassingSchema",
+                                "type": "Expression"
+                            },
+                            "isSequential": true,
+                            "activities": [
+                                {
+                                    "name": "Copy data1",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "SqlServerSource",
+                                            "sqlReaderQuery": {
+                                                "value": "@{item().Src_Query}",
+                                                "type": "Expression"
+                                            },
+                                            "queryTimeout": "02:00:00"
+                                        },
+                                        "sink": {
+                                            "type": "SqlServerSink"
+                                        },
+                                        "enableStaging": false
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "DS_Source_Table",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "Table_Schema": "@{item().Src_Schema}",
+                                                "Table_Name": "@{item().Src_Table}",
+                                                "Database_Name": "@{item().Src_Database}",
+                                                "Server_Name": "@{item().Src_Server}",
+                                                "User_Name": "@{item().Src_User}",
+                                                "Password": "@{item().Src_Pwd}",
+                                                "Query": "@{item().Src_Query}",
+                                                "ID": "@{item().ID}",
+                                                "Query_v1": "@{item().Src_Query_v1}",
+                                                "Param_1": "@{item().Src_Param_1}"
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "DS_Target_Table",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "Target_Table": "@{item().Trg_Table}",
+                                                "Target_Schema": "@{item().Trg_Schema}",
+                                                "DatabaseName": "@{item().Trg_Database}",
+                                                "Target_ServerName": "@{item().Trg_Server}",
+                                                "Target_UserName": "@{item().Trg_User}",
+                                                "Target_Password": "@{item().Trg_Pwd}",
+                                                "Target_Query": "@{item().Trg_Pwd}",
+                                                "Target_Param_1": "@{item().Trg_Pwd}"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "parameters": {
+                    "PassingSchema": {
+                        "type": "array"
+                    }
+                },
+                "variables": {
+                    "id": {
+                        "type": "String"
+                    }
+                },
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/DS_Source_Table')]",
+                "[concat(variables('factoryId'), '/datasets/DS_Target_Table')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Master Pipeline')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Lookup1",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "Stored Procedure1",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlServerSource",
+                                "sqlReaderQuery": "SELECT * FROM metadata.All_Connections_v2\nwhere ID= 1\n",
+                                "queryTimeout": "02:00:00"
+                            },
+                            "dataset": {
+                                "referenceName": "DS_Metadata",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": false
+                        }
+                    },
+                    {
+                        "name": "Execute Pipeline1",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Lookup1",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "Child Pipeline Clone",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {
+                                "PassingSchema": {
+                                    "value": "@activity('Lookup1').output.value",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Stored Procedure1",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[metadata].[sp_Truncate_StagingTables]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "LS_Metadata",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/DS_Metadata')]",
+                "[concat(variables('factoryId'), '/pipelines/Child Pipeline Clone')]",
+                "[concat(variables('factoryId'), '/linkedServices/LS_Metadata')]"
+            ]
+        }
+    ]
+}

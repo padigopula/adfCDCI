@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "value": "AzDataFactoryDev"
+        },
+        "LS_AZ_BLOB_Delimited_connectionString": {
+            "value": ""
+        },
+        "LS_AZ_Blob_connectionString": {
+            "value": ""
+        },
+        "LS_AZ_table_connectionString": {
+            "value": ""
+        },
+        "LS_Metadata_connectionString": {
+            "value": ""
+        },
+        "LS_Source_connectionString": {
+            "value": ""
+        },
+        "LS_Target_connectionString": {
+            "value": ""
+        },
+        "LS_Test_Azure_connectionString": {
+            "value": ""
+        },
+        "LS_Source_properties_typeProperties_userName": {
+            "value": "@{linkedService().User_Name}"
+        },
+        "containerUri": {
+            "value": ""
+        },
+        "containerSasToken": {
+            "value": ""
+        }
+    }
+}
